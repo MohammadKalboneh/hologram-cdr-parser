@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model UsageRecord {
+  id         Int      @id
+  mnc        Int?
+  bytesUsed  Int      @map("bytes_used")
+  dmcc       String?
+  cellid     BigInt?
+  ip         String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("usage_records")
+}
