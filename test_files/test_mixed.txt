@@ -1,10 +1,10 @@
-3,1024
-7294,a03,9523,293451,31194
-1016,00b603e800007bdac0a80001
-9991,2935
-316,0e893279227712cac0014aff
-,1234                     # missing id
-12,notanumber              # invalid bytes_used
-7194,b33,394,495593        # extended missing cellid
-1016,deadbeef              # hex too short
-abc,123                    # invalid id
+313,1024
+7204,a03,9523,293451,31194
+116,00b603e800007bdac0a80001
+991,2935
+36,0e893279227712cac0014aff
+,1234
+12,notanumber
+71944,b33,394,495593
+1016,deadbeef
+abc,123

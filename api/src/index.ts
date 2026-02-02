@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import { uploadErrorHandler, uploadHandler, uploadMiddleware } from "./routes/upload";
+import { streamUploadHandler } from "./routes/streamUpload";
 import { getRecordsHandler, createRecordHandler } from "./routes/records";
 import swaggerUi from "swagger-ui-express";
 import { openapi } from "./openapi";
@@ -17,7 +18,11 @@ app.get("/health", (_req, res) => {
 
 app.get("/records", getRecordsHandler);
 app.post("/records", createRecordHandler);
+
 app.post("/upload", uploadMiddleware, uploadHandler);
+
+app.post("/upload/stream", streamUploadHandler);
+
 app.use(uploadErrorHandler);
 
 app.get("/openapi.json", (_req, res) => {

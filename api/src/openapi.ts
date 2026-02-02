@@ -33,9 +33,9 @@ export const openapi = {
 
     "/upload": {
       post: {
-        summary: "Upload a CDR file and parse records",
+        summary: "Upload a CDR file and parse records (Memory-based)",
         description:
-          "Accepts a text file containing one CDR record per line. Returns parsed records and per-line parse errors. Valid records are inserted into the database (duplicates skipped).",
+          "Accepts a text file containing one CDR record per line. Loads entire file into memory before processing. Returns parsed records and per-line parse errors. Valid records are inserted into the database (duplicates skipped). Max file size: 5MB. For larger files, use /upload/stream.",
         requestBody: {
           required: true,
           content: {
@@ -44,7 +44,7 @@ export const openapi = {
                 type: "object",
                 required: ["file"],
                 properties: {
-                  file: { type: "string", format: "binary" },
+                  file: { type: "string", format: "binary", description: "CDR file (max 5MB)" },
                 },
               },
             },
@@ -76,6 +76,101 @@ export const openapi = {
           },
           "400": {
             description: "Missing file",
+          },
+          "413": {
+            description: "File too large (max 5MB)",
+          },
+        },
+      },
+    },
+
+    "/upload/stream": {
+      post: {
+        summary: "Upload a CDR file and parse records (Stream-based, Recommended)",
+        description:
+          "Accepts a text file containing one CDR record per line. Processes file line-by-line using streaming for memory efficiency. Ideal for large files. Returns metadata and parse errors. Valid records are inserted into the database in batches (duplicates skipped). Max file size: 100MB.",
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                required: ["file"],
+                properties: {
+                  file: { type: "string", format: "binary", description: "CDR file (max 100MB)" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Parsed and stored results",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    meta: {
+                      type: "object",
+                      properties: {
+                        totalLines: { type: "integer", description: "Total number of lines processed" },
+                        parsedRecords: { type: "integer", description: "Number of successfully parsed records" },
+                        insertedRecords: { type: "integer", description: "Number of records inserted (duplicates skipped)" },
+                        errorCount: { type: "integer", description: "Number of lines with parse errors" },
+                      },
+                    },
+                    errors: { 
+                      type: "array", 
+                      items: { $ref: "#/components/schemas/ParseError" },
+                      description: "Array of parse errors (omitted if empty)"
+                    },
+                  },
+                },
+                example: {
+                  meta: {
+                    totalLines: 1000,
+                    parsedRecords: 995,
+                    insertedRecords: 990,
+                    errorCount: 5
+                  },
+                  errors: [
+                    {
+                      lineNumber: 10,
+                      line: "invalid,data",
+                      message: "basic: bytes_used must be an integer"
+                    }
+                  ]
+                },
+              },
+            },
+          },
+          "400": {
+            description: "Missing file field",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    message: { type: "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            description: "Processing error",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    message: { type: "string" },
+                    error: { type: "string" }
+                  }
+                }
+              }
+            }
           },
         },
       },
