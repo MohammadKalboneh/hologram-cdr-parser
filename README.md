@@ -27,16 +27,37 @@ Parsing logic is isolated from HTTP and database concerns to keep it testable an
 - Docker
 - Docker Compose
 
-### Start everything
-From the project root, run:
+### Initial Setup
 
-    docker compose up --build
+1. **Configure environment variables**
 
-This will:
-- Start PostgreSQL
-- Run database migrations automatically
-- Start the API
-- Start the web UI
+   Copy the example environment files and customize them:
+
+   ```bash
+   # Root environment (database and API config)
+   cp .env.example .env
+   
+   # Web environment (frontend config)
+   cp web/.env.example web/.env
+   ```
+
+   Update the values in `.env` as needed:
+   - `POSTGRES_PASSWORD`: Set a secure database password
+   - Other values can remain as defaults for local development
+
+2. **Start the services**
+
+   From the project root, run:
+
+   ```bash
+   docker compose up --build
+   ```
+
+   This will:
+   - Start PostgreSQL
+   - Run database migrations automatically
+   - Start the API
+   - Start the web UI
 
 ### Stop everything
 
