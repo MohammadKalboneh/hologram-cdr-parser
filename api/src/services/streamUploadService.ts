@@ -7,11 +7,8 @@ export interface BatchInsertResult {
 }
 
 export class StreamUploadService {
-  private readonly BATCH_SIZE = 500; // Configurable batch size
+  private readonly BATCH_SIZE = 500;
 
-  /**
-   * Insert a batch of records into the database
-   */
   async insertBatch(records: NormalizedUsageRecord[]): Promise<number> {
     if (records.length === 0) return 0;
 
@@ -32,11 +29,6 @@ export class StreamUploadService {
     return result.count;
   }
 
-  /**
-   * Process a stream of records in batches, inserting into the database
-   * as batches are filled. This prevents memory overflow and provides
-   * better performance than inserting one at a time.
-   */
   async processStreamInBatches(
     recordStream: AsyncGenerator<NormalizedUsageRecord>
   ): Promise<BatchInsertResult> {

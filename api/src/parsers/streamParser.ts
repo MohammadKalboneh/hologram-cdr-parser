@@ -24,7 +24,7 @@ export async function* parseFileStream(
       lineNumber++;
       const line = raw.trim();
 
-      if (!line) continue; // Skip empty lines
+      if (!line) continue;
 
       const result = parseLine(line);
 
